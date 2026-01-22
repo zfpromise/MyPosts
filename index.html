@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WEDDING INVITATION</title>
 
-    <!-- 【修改点1】将 unpkg 换成了国内的 bootcdn，速度飞快且不会被墙 -->
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/Swiper/8.4.7/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <!-- 【关键修改1】换成阿里巴巴(饿了么)的源，解决被广告插件拦截的问题 -->
+    <link rel="stylesheet" href="https://npm.elemecdn.com/swiper@8.4.7/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://npm.elemecdn.com/animate.css@4.1.1/animate.min.css"/>
 
     <style>
         /* --- 全局样式 --- */
@@ -17,7 +17,7 @@
         /* --- 加载动画 --- */
         #loading { position: fixed; inset: 0; background: #fff; z-index: 999; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s; }
 
-        /* --- 音乐按钮 --- */
+        /* --- 音乐按钮 (先保留样式，功能暂时不管) --- */
         .music-btn { position: fixed; top: 20px; right: 20px; z-index: 100; width: 30px; height: 30px; background: rgba(0,0,0,0.3); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.5); animation: spin 4s linear infinite; }
         .music-paused { animation-play-state: paused; opacity: 0.5; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -36,6 +36,8 @@
             background-size: cover;
             background-position: center center;
             position: absolute; top: 0; left: 0;
+            /* 增加一个灰色背景，万一图片加载慢，不会是死黑 */
+            background-color: #eee;
         }
 
         .mask { position: absolute; inset: 0; background: rgba(0,0,0,0.15); }
@@ -44,10 +46,12 @@
             position: absolute; color: #fff;
             text-shadow: 0 2px 8px rgba(0,0,0,0.4);
             letter-spacing: 1px;
+            z-index: 10; /* 确保文字在图片上面 */
         }
         .hide { visibility: hidden; }
 
         /* === 样式调整 === */
+        /* 第1页：封面 */
         .slide-1 .bg-img { background-image: url('img/cover.jpg'); background-position: center bottom; }
         .slide-1 .text-box {
             top: 10%; right: 8%; text-align: right;
@@ -57,6 +61,7 @@
         .slide-1 .title-cn { font-size: 24px; font-weight: 300; letter-spacing: 5px;}
         .slide-1 .date { margin-top: 20px; font-size: 16px; border-top: 1px solid #333; padding-top: 10px; display: inline-block;}
 
+        /* 第2页：故事 */
         .slide-2 .bg-img { background-image: url('img/story.jpg'); }
         .slide-2 .text-box {
             top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -66,9 +71,11 @@
             text-align: center; border-radius: 4px;
         }
 
+        /* 第3页：新娘 */
         .slide-3 .bg-img { background-image: url('img/bride.jpg'); }
         .slide-3 .text-box { bottom: 12%; left: 10%; text-align: left; }
 
+        /* 第4页：邀请 */
         .slide-4 .bg-img { background-image: url('img/invite.jpg'); background-position: center top; }
         .slide-4 .text-box { bottom: 15%; width: 100%; text-align: center; }
         .map-btn {
@@ -82,14 +89,10 @@
 <body>
 
 <!-- Loading -->
-<div id="loading"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0icGluayI+PHBhdGggZD0iTTEyIDIxLjM1bC0xLjQ1LTEuMzJDMTUuNCAxNS4zNiAyIDguMjggMiA1LjVBMi41IDIuNSAwIDAgMCA1LjUgMkMxMC40MiAyIDEyIDQuMDYgMTIgNC4wNlMxMy41OCAyIDE4LjUgMkEyLjUgMi41IDAgMCAwIDIyIDUuNWMwIDIuNzgtMTMuNCA5Ljg2LTguNTUgMTQuNTRMMTIgMjEuMzV6Ii8+PC9zdmc+" width="50"></div>
+<div id="loading"><div style="color:pink">❤ Loading...</div></div>
 
 <!-- 音乐开关 -->
-<div class="music-btn" id="musicBtn">🎵</div>
-
-<!-- 【修改点2】请注意：网络音乐链接经常失效，强烈建议你下载一个mp3放到 img 文件夹里，然后改成 src="img/bgm.mp3" -->
-<!-- 暂时给你换了一个相对稳定的链接，如果还没声音，请按照下面的“额外步骤”操作 -->
-<audio id="bgm" loop src="https://music.163.com/song/media/outer/url?id=1901371647.mp3"></audio>
+<div class="music-btn" id="musicBtn" style="display:none">🎵</div> <!-- 先隐藏音乐按钮，避免干扰 -->
 
 <!-- 箭头 -->
 <div class="arrow">
@@ -160,70 +163,40 @@
     </div>
 </div>
 
-<!-- 【修改点3】将JS也换成了国内CDN -->
-<script src="https://cdn.bootcdn.net/ajax/libs/Swiper/8.4.7/swiper-bundle.min.js"></script>
+<!-- 【关键修改2】JS也换成阿里巴巴源 -->
+<script src="https://npm.elemecdn.com/swiper@8.4.7/swiper-bundle.min.js"></script>
 <script>
-    // 【修改点4】把变量声明提到最前面，解决 'audio' before initialization 报错
-    var audio = document.getElementById('bgm');
-    var musicBtn = document.getElementById('musicBtn');
-
-    // 音乐控制逻辑
-    function playMusic() {
-        // 用户已有交互，尝试播放
-        if(audio) {
-            audio.play().then(() => {
-                musicBtn.classList.remove('music-paused');
-            }).catch((e) => {
-                console.log("自动播放被拦截，等待点击", e);
-                musicBtn.classList.add('music-paused');
-            });
-        }
-    }
-
-    function toggleMusic() {
-        if (audio.paused) {
-            audio.play();
-            musicBtn.classList.remove('music-paused');
-        } else {
-            audio.pause();
-            musicBtn.classList.add('music-paused');
-        }
-    }
-
-    // 绑定点击事件
-    musicBtn.addEventListener('click', toggleMusic);
-
     // 1. Loading 消失逻辑
     window.onload = function() {
-        setTimeout(() => {
-            var loading = document.getElementById('loading');
-            if(loading) {
-                loading.style.opacity = '0';
-                setTimeout(() => {
-                    loading.remove();
-                    // 页面加载完成后尝试播放
-                    playMusic();
-                }, 800);
-            }
-        }, 1000);
+        // 简单粗暴：直接移除loading，不等待其他
+        var loading = document.getElementById('loading');
+        setTimeout(function() {
+            loading.style.opacity = '0';
+            setTimeout(function() { loading.remove(); }, 600);
+        }, 500);
     }
 
-    // 2. Swiper 初始化
-    const swiper = new Swiper('.mySwiper', {
-        direction: 'vertical',
-        loop: false,
-        // 确保加载 Animate.css 后再显示动画
-        on: {
-            init: function () { doAni(this); },
-            slideChangeTransitionEnd: function () { doAni(this); }
-        }
-    });
+    // 2. Swiper 初始化 (加了 try-catch 防止报错阻断)
+    try {
+        const swiper = new Swiper('.mySwiper', {
+            direction: 'vertical',
+            loop: false,
+            on: {
+                init: function () { doAni(this); },
+                slideChangeTransitionEnd: function () { doAni(this); }
+            }
+        });
+    } catch (e) {
+        console.error("Swiper启动失败，可能是资源没加载", e);
+        alert("资源加载失败，请关闭广告拦截插件后重试");
+    }
 
     // 3. 动画逻辑
     function doAni(swiper) {
         document.querySelectorAll('.hide').forEach(el => {
             el.style.visibility = 'hidden';
             el.classList.remove('animate__animated');
+            // 移除所有 animate__ 开头的类
             el.classList.forEach(cls => {
                 if(cls.startsWith('animate__')) el.classList.remove(cls);
             });
@@ -240,11 +213,6 @@
             el.classList.add('animate__animated', aniName);
         });
     }
-
-    // 微信等浏览器兼容：触摸即播放
-    document.body.addEventListener('touchstart', function() {
-        if(audio.paused) playMusic();
-    }, {once:true});
 </script>
 </body>
 </html>

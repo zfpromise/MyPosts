@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WEDDING INVITATION</title>
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <style>
+        /* --- 全局样式 --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; background: #000; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+
+        /* --- 加载动画 --- */
+        #loading { position: fixed; inset: 0; background: #fff; z-index: 999; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s; }
+
+        /* --- 音乐按钮 --- */
+        .music-btn { position: fixed; top: 20px; right: 20px; z-index: 100; width: 30px; height: 30px; background: rgba(0,0,0,0.3); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.5); animation: spin 4s linear infinite; }
+        .music-paused { animation-play-state: paused; opacity: 0.5; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- 提示上滑箭头 --- */
+        .arrow { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 20px; z-index: 100; animation: float 1.5s infinite; opacity: 0.8; }
+        @keyframes float { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -10px); } }
+
+        /* --- Swiper 布局 --- */
+        .swiper { width: 100%; height: 100%; }
+        .swiper-slide { position: relative; overflow: hidden; background-color: #f5f5f5; }
+
+        /* 图片通用样式：确保图片铺满且居中 */
+        .bg-img {
+            width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center center;
+            position: absolute; top: 0; left: 0;
+        }
+
+        /* 遮罩：为了让白字看清楚，加一层淡淡的黑滤镜 */
+        .mask { position: absolute; inset: 0; background: rgba(0,0,0,0.15); }
+
+        /* --- 文字容器通用 --- */
+        .text-box {
+            position: absolute; color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            letter-spacing: 1px;
+        }
+        .hide { visibility: hidden; } /* 初始隐藏，等动画 */
+
+        /* === 针对每一张照片的特殊排版 (关键部分) === */
+
+        /* 第1页：欧式建筑 - 人在下中，右上角留白适合放标题 */
+        .slide-1 .bg-img { background-image: url('img/cover.jpg'); background-position: center bottom; }
+        .slide-1 .text-box {
+            top: 10%; right: 8%; text-align: right;
+            color: #333; /* 背景是浅色墙面，字用深色 */
+            text-shadow: none;
+        }
+        .slide-1 .title-en { font-size: 40px; font-family: serif; font-weight: bold; margin-bottom: 5px; color: #000;}
+        .slide-1 .title-cn { font-size: 24px; font-weight: 300; letter-spacing: 5px;}
+        .slide-1 .date { margin-top: 20px; font-size: 16px; border-top: 1px solid #333; padding-top: 10px; display: inline-block;}
+
+        /* 第2页：奔跑头纱 - 画面较乱，适合中间放一个半透明框 */
+        .slide-2 .bg-img { background-image: url('img/story.jpg'); }
+        .slide-2 .text-box {
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 80%; padding: 30px;
+            background: rgba(255,255,255,0.85); /* 白色半透明背景框 */
+            color: #333; text-shadow: none;
+            text-align: center; border-radius: 4px;
+        }
+
+        /* 第3页：新娘独照 - 人在中间，字放最下面 */
+        .slide-3 .bg-img { background-image: url('img/bride.jpg'); }
+        .slide-3 .text-box { bottom: 12%; left: 10%; text-align: left; }
+
+        /* 第4页：草坪合影 - 下方草地留白多，字放下面 */
+        .slide-4 .bg-img { background-image: url('img/invite.jpg'); background-position: center top; } /* 锚点定在上面，防止切头 */
+        .slide-4 .text-box { bottom: 15%; width: 100%; text-align: center; }
+        .map-btn {
+            display: inline-block; margin-top: 15px; padding: 8px 25px;
+            border: 1px solid #fff; border-radius: 20px;
+            color: #fff; text-decoration: none; font-size: 14px;
+            background: rgba(0,0,0,0.2); backdrop-filter: blur(5px);
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0icGluayI+PHBhdGggZD0iTTEyIDIxLjM1bC0xLjQ1LTEuMzJDMTUuNCAxNS4zNiAyIDguMjggMiA1LjVBMi41IDIuNSAwIDAgMCA1LjUgMkMxMC40MiAyIDEyIDQuMDYgMTIgNC4wNlMxMy41OCAyIDE4LjUgMkEyLjUgMi41IDAgMCAwIDIyIDUuNWMwIDIuNzgtMTMuNCA5Ljg2LTguNTUgMTQuNTRMMTIgMjEuMzV6Ii8+PC9zdmc+" width="50"></div>
+
+<!-- 音乐开关 -->
+<div class="music-btn" id="musicBtn">🎵</div>
+<audio id="bgm" loop src="https://music.163.com/song/media/outer/url?id=1436709403.mp3"></audio>
+
+<!-- 箭头 -->
+<div class="arrow">
+    <svg viewBox="0 0 1024 1024" width="20" height="20" fill="#fff"><path d="M512 320L192 640h640z"/></svg>
+</div>
+
+<!-- 页面主体 -->
+<div class="swiper mySwiper">
+    <div class="swiper-wrapper">
+
+        <!-- 1. 封面 -->
+        <div class="swiper-slide slide-1">
+            <div class="bg-img"></div>
+            <!-- 注意：这里去掉了mask，因为第一张照片很干净 -->
+            <div class="text-box">
+                <div class="hide" data-ani="animate__fadeInRight">We Are<br>Getting Married</div>
+                <div class="title-en hide" data-ani="animate__fadeInRight" data-delay="0.2s">WEDDING</div>
+                <div class="title-cn hide" data-ani="animate__fadeInRight" data-delay="0.4s">李雷 & 韩梅梅</div>
+                <div class="date hide" data-ani="animate__fadeInUp" data-delay="0.8s">2026.05.20 | BeiJing</div>
+            </div>
+        </div>
+
+        <!-- 2. 故事 -->
+        <div class="swiper-slide slide-2">
+            <div class="bg-img"></div>
+            <div class="text-box">
+                <h3 class="hide" data-ani="animate__fadeInDown" style="font-size: 20px; margin-bottom: 15px; letter-spacing: 3px;">关于我们</h3>
+                <p class="hide" data-ani="animate__zoomIn" data-delay="0.3s" style="line-height: 1.8; font-size: 14px; color: #555;">
+                    喜欢是一朝一夕<br>
+                    爱是从心动到古稀<br>
+                    Start from 2024<br>
+                    ...<br>
+                    我们要结婚啦
+                </p>
+            </div>
+        </div>
+
+        <!-- 3. 新娘 -->
+        <div class="swiper-slide slide-3">
+            <div class="bg-img"></div>
+            <div class="mask"></div> <!-- 加一点遮罩防止字看不清 -->
+            <div class="text-box">
+                <p class="hide" data-ani="animate__fadeInUp" style="font-size: 18px; font-weight: bold;">To My Love</p>
+                <p class="hide" data-ani="animate__fadeInUp" data-delay="0.3s" style="font-size: 14px; margin-top: 10px; opacity: 0.9;">
+                    斯人若彩虹，遇上方知有。<br>
+                    往后余生，请多指教。
+                </p>
+            </div>
+        </div>
+
+        <!-- 4. 邀请 -->
+        <div class="swiper-slide slide-4">
+            <div class="bg-img"></div>
+            <div class="mask" style="background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);"></div> <!-- 渐变遮罩，只遮下面 -->
+            <div class="text-box">
+                <h2 class="hide" data-ani="animate__fadeInDown" style="letter-spacing: 5px; margin-bottom: 10px;">诚挚邀请</h2>
+                <p class="hide" data-ani="animate__fadeIn" data-delay="0.3s" style="font-size: 14px; margin-bottom: 20px;">期待您见证我们的幸福时刻</p>
+
+                <div class="hide" data-ani="animate__fadeInUp" data-delay="0.6s" style="font-size: 20px; font-weight: bold; margin-bottom: 5px;">2026年5月20日</div>
+                <div class="hide" data-ani="animate__fadeInUp" data-delay="0.7s" style="font-size: 14px;">11:58 AM</div>
+
+                <div class="hide" data-ani="animate__fadeInUp" data-delay="0.9s" style="margin-top: 20px;">
+                    <p style="font-size: 14px; opacity: 0.8; margin-bottom: 10px;">📍 XX市XX区XX大酒店宴会厅</p>
+                    <!-- 记得换这个地图链接 -->
+                    <a href="https://map.baidu.com" class="map-btn">一键导航</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 脚本区 -->
+<script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+<script>
+    // 1. Loading 消失
+    window.onload = function() {
+        setTimeout(() => {
+            document.getElementById('loading').style.opacity = '0';
+            setTimeout(() => { document.getElementById('loading').remove(); playMusic(); }, 800);
+        }, 1000);
+    }
+
+    // 2. Swiper 初始化
+    const swiper = new Swiper('.mySwiper', {
+        direction: 'vertical',
+        loop: false,
+        on: {
+            init: function () { doAni(this); },
+            slideChangeTransitionEnd: function () { doAni(this); }
+        }
+    });
+
+    // 3. 动画逻辑
+    function doAni(swiper) {
+        // 清除所有 slide 的动画状态
+        document.querySelectorAll('.hide').forEach(el => {
+            el.style.visibility = 'hidden';
+            el.classList.remove('animate__animated');
+            // 移除所有 animate__ 开头的类
+            el.classList.forEach(cls => {
+                if(cls.startsWith('animate__')) el.classList.remove(cls);
+            });
+        });
+
+        // 给当前 slide 添加动画
+        const activeSlide = swiper.slides[swiper.activeIndex];
+        const aniItems = activeSlide.querySelectorAll('.hide');
+
+        aniItems.forEach(el => {
+            el.style.visibility = 'visible';
+            const aniName = el.getAttribute('data-ani');
+            const delay = el.getAttribute('data-delay') || '0s';
+            el.style.animationDelay = delay;
+            el.classList.add('animate__animated', aniName);
+        });
+    }
+
+    // 4. 音乐逻辑
+    const audio = document.getElementById('bgm');
+    const btn = document.getElementById('musicBtn');
+    function playMusic() {
+        audio.play().catch(() => btn.classList.add('music-paused'));
+        btn.classList.remove('music-paused');
+    }
+    btn.onclick = () => {
+        if (audio.paused) { audio.play(); btn.classList.remove('music-paused'); }
+        else { audio.pause(); btn.classList.add('music-paused'); }
+    };
+    document.body.addEventListener('touchstart', () => {
+        if(audio.paused) playMusic();
+    }, {once:true});
+</script>
+</body>
+</html>

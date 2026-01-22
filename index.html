@@ -5,212 +5,201 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WEDDING INVITATION</title>
 
-    <!-- 【关键修改1】换成阿里巴巴(饿了么)的源，解决被广告插件拦截的问题 -->
+    <!-- 引入资源 -->
     <link rel="stylesheet" href="https://npm.elemecdn.com/swiper@8.4.7/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://npm.elemecdn.com/animate.css@4.1.1/animate.min.css"/>
 
     <style>
-        /* --- 全局样式 --- */
+        /* --- 基础设定 --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; overflow: hidden; background: #000; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        html, body { height: 100%; overflow: hidden; background: #222; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
 
         /* --- 加载动画 --- */
-        #loading { position: fixed; inset: 0; background: #fff; z-index: 999; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s; }
+        #loading { position: fixed; inset: 0; background: #fff; z-index: 999; display: flex; justify-content: center; align-items: center; transition: opacity 0.6s; }
 
-        /* --- 音乐按钮 (先保留样式，功能暂时不管) --- */
-        .music-btn { position: fixed; top: 20px; right: 20px; z-index: 100; width: 30px; height: 30px; background: rgba(0,0,0,0.3); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.5); animation: spin 4s linear infinite; }
-        .music-paused { animation-play-state: paused; opacity: 0.5; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* --- 提示上滑箭头 --- */
-        .arrow { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 20px; z-index: 100; animation: float 1.5s infinite; opacity: 0.8; }
-        @keyframes float { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -10px); } }
-
-        /* --- Swiper 布局 --- */
+        /* --- Swiper --- */
         .swiper { width: 100%; height: 100%; }
         .swiper-slide { position: relative; overflow: hidden; background-color: #f5f5f5; }
 
-        /* 图片通用样式 */
+        /* --- 通用图片样式 --- */
         .bg-img {
             width: 100%; height: 100%;
             background-size: cover;
             background-position: center center;
             position: absolute; top: 0; left: 0;
-            /* 增加一个灰色背景，万一图片加载慢，不会是死黑 */
-            background-color: #eee;
+            transition: transform 10s linear; /* 图片缓慢放大特效 */
         }
+        /* 让当前页面的图片动起来 */
+        .swiper-slide-active .bg-img { transform: scale(1.1); }
 
-        .mask { position: absolute; inset: 0; background: rgba(0,0,0,0.15); }
+        /* --- 核心：高级感排版样式 --- */
 
-        .text-box {
-            position: absolute; color: #fff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-            letter-spacing: 1px;
-            z-index: 10; /* 确保文字在图片上面 */
-        }
-        .hide { visibility: hidden; }
-
-        /* === 样式调整 === */
-        /* 第1页：封面 */
+        /* 1. 封面 (针对那张树和建筑的图) */
         .slide-1 .bg-img { background-image: url('img/cover.jpg'); background-position: center bottom; }
-        .slide-1 .text-box {
-            top: 10%; right: 8%; text-align: right;
-            color: #333; text-shadow: none;
-        }
-        .slide-1 .title-en { font-size: 40px; font-family: serif; font-weight: bold; margin-bottom: 5px; color: #000;}
-        .slide-1 .title-cn { font-size: 24px; font-weight: 300; letter-spacing: 5px;}
-        .slide-1 .date { margin-top: 20px; font-size: 16px; border-top: 1px solid #333; padding-top: 10px; display: inline-block;}
 
-        /* 第2页：故事 */
+        /* 毛玻璃卡片样式 */
+        .glass-card {
+            position: absolute;
+            top: 25%; /* 放在上部，避开下面的人 */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            padding: 30px 20px;
+            text-align: center;
+
+            /* 毛玻璃特效核心代码 */
+            background: rgba(255, 255, 255, 0.7); /* 白色半透明 */
+            backdrop-filter: blur(10px); /* 模糊背景 */
+            -webkit-backdrop-filter: blur(10px); /* 兼容苹果 */
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+
+        .slide-1 h1 { font-family: 'Times New Roman', serif; font-size: 48px; color: #1a1a1a; margin-bottom: 10px; letter-spacing: 2px; }
+        .slide-1 h2 { font-size: 22px; color: #333; font-weight: 400; letter-spacing: 5px; margin-bottom: 20px; }
+        .slide-1 .line { width: 40px; height: 1px; background: #666; margin: 0 auto 20px; }
+        .slide-1 p { font-size: 14px; color: #555; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* 2. 故事 (针对奔跑头纱) */
         .slide-2 .bg-img { background-image: url('img/story.jpg'); }
-        .slide-2 .text-box {
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 80%; padding: 30px;
-            background: rgba(255,255,255,0.85);
-            color: #333; text-shadow: none;
-            text-align: center; border-radius: 4px;
+        .slide-2 .simple-box {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #fff; padding: 40px 30px; width: 85%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
         }
 
-        /* 第3页：新娘 */
+        /* 3. 新娘 (针对独照) */
         .slide-3 .bg-img { background-image: url('img/bride.jpg'); }
-        .slide-3 .text-box { bottom: 12%; left: 10%; text-align: left; }
-
-        /* 第4页：邀请 */
-        .slide-4 .bg-img { background-image: url('img/invite.jpg'); background-position: center top; }
-        .slide-4 .text-box { bottom: 15%; width: 100%; text-align: center; }
-        .map-btn {
-            display: inline-block; margin-top: 15px; padding: 8px 25px;
-            border: 1px solid #fff; border-radius: 20px;
-            color: #fff; text-decoration: none; font-size: 14px;
-            background: rgba(0,0,0,0.2); backdrop-filter: blur(5px);
+        .slide-3 .text-bottom {
+            position: absolute; bottom: 80px; left: 30px;
+            color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
+
+        /* 4. 邀请 (针对草坪) */
+        .slide-4 .bg-img { background-image: url('img/invite.jpg'); background-position: center top; }
+        .slide-4 .mask-gradient {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 60%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+        .slide-4 .info-box {
+            position: absolute; bottom: 50px; width: 100%; text-align: center; color: #fff;
+        }
+        .btn {
+            display: inline-block; margin-top: 20px; padding: 10px 30px;
+            border: 1px solid rgba(255,255,255,0.8); border-radius: 50px;
+            color: #fff; text-decoration: none; font-size: 14px; letter-spacing: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* 箭头 & 音乐 */
+        .arrow { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 20px; z-index: 100; animation: float 1.5s infinite; opacity: 0.8; }
+        @keyframes float { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -10px); } }
+
+        /* 动画初始状态 */
+        .ani { visibility: hidden; }
     </style>
 </head>
 <body>
 
-<!-- Loading -->
-<div id="loading"><div style="color:pink">❤ Loading...</div></div>
+<div id="loading"><div style="color:#666; font-size:12px; letter-spacing:2px;">LOADING...</div></div>
 
-<!-- 音乐开关 -->
-<div class="music-btn" id="musicBtn" style="display:none">🎵</div> <!-- 先隐藏音乐按钮，避免干扰 -->
-
-<!-- 箭头 -->
 <div class="arrow">
     <svg viewBox="0 0 1024 1024" width="20" height="20" fill="#fff"><path d="M512 320L192 640h640z"/></svg>
 </div>
 
-<!-- 页面主体 -->
 <div class="swiper mySwiper">
     <div class="swiper-wrapper">
 
-        <!-- 1. 封面 -->
+        <!-- Slide 1: 封面 (毛玻璃效果) -->
         <div class="swiper-slide slide-1">
             <div class="bg-img"></div>
-            <div class="text-box">
-                <div class="hide" data-ani="animate__fadeInRight">We Are<br>Getting Married</div>
-                <div class="title-en hide" data-ani="animate__fadeInRight" data-delay="0.2s">WEDDING</div>
-                <div class="title-cn hide" data-ani="animate__fadeInRight" data-delay="0.4s">李雷 & 韩梅梅</div>
-                <div class="date hide" data-ani="animate__fadeInUp" data-delay="0.8s">2026.05.20 | BeiJing</div>
+            <div class="glass-card">
+                <h1 class="ani" data-ani="animate__fadeInDown">WEDDING</h1>
+                <div class="line ani" data-ani="animate__zoomIn" data-delay="0.3s"></div>
+                <h2 class="ani" data-ani="animate__fadeInUp" data-delay="0.5s">李雷 & 韩梅梅</h2>
+                <p class="ani" data-ani="animate__fadeInUp" data-delay="0.8s">2026.05.20 · BEIJING</p>
             </div>
         </div>
 
-        <!-- 2. 故事 -->
+        <!-- Slide 2: 故事 (白色卡片) -->
         <div class="swiper-slide slide-2">
             <div class="bg-img"></div>
-            <div class="text-box">
-                <h3 class="hide" data-ani="animate__fadeInDown" style="font-size: 20px; margin-bottom: 15px; letter-spacing: 3px;">关于我们</h3>
-                <p class="hide" data-ani="animate__zoomIn" data-delay="0.3s" style="line-height: 1.8; font-size: 14px; color: #555;">
+            <div class="simple-box">
+                <p class="ani" data-ani="animate__fadeInUp" style="font-size: 14px; line-height: 2; color: #666; font-weight: 300;">
                     喜欢是一朝一夕<br>
                     爱是从心动到古稀<br>
-                    Start from 2024<br>
-                    ...<br>
-                    我们要结婚啦
+                    <br>
+                    我们在秋天相遇<br>
+                    将在夏天根据
                 </p>
             </div>
         </div>
 
-        <!-- 3. 新娘 -->
+        <!-- Slide 3: 新娘 (极简左下角) -->
         <div class="swiper-slide slide-3">
             <div class="bg-img"></div>
-            <div class="mask"></div>
-            <div class="text-box">
-                <p class="hide" data-ani="animate__fadeInUp" style="font-size: 18px; font-weight: bold;">To My Love</p>
-                <p class="hide" data-ani="animate__fadeInUp" data-delay="0.3s" style="font-size: 14px; margin-top: 10px; opacity: 0.9;">
-                    斯人若彩虹，遇上方知有。<br>
-                    往后余生，请多指教。
-                </p>
+            <div class="text-bottom">
+                <h2 class="ani" data-ani="animate__fadeInUp" style="font-size: 32px; font-family: serif; margin-bottom: 10px;">The Bride</h2>
+                <p class="ani" data-ani="animate__fadeInUp" data-delay="0.2s" style="font-size: 12px; opacity: 0.8; letter-spacing: 2px;">BEAUTIFUL IN WHITE</p>
             </div>
         </div>
 
-        <!-- 4. 邀请 -->
+        <!-- Slide 4: 邀请 (底部渐变) -->
         <div class="swiper-slide slide-4">
             <div class="bg-img"></div>
-            <div class="mask" style="background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);"></div>
-            <div class="text-box">
-                <h2 class="hide" data-ani="animate__fadeInDown" style="letter-spacing: 5px; margin-bottom: 10px;">诚挚邀请</h2>
-                <p class="hide" data-ani="animate__fadeIn" data-delay="0.3s" style="font-size: 14px; margin-bottom: 20px;">期待您见证我们的幸福时刻</p>
-
-                <div class="hide" data-ani="animate__fadeInUp" data-delay="0.6s" style="font-size: 20px; font-weight: bold; margin-bottom: 5px;">2026年5月20日</div>
-                <div class="hide" data-ani="animate__fadeInUp" data-delay="0.7s" style="font-size: 14px;">11:58 AM</div>
-
-                <div class="hide" data-ani="animate__fadeInUp" data-delay="0.9s" style="margin-top: 20px;">
-                    <p style="font-size: 14px; opacity: 0.8; margin-bottom: 10px;">📍 XX市XX区XX大酒店宴会厅</p>
-                    <a href="https://map.baidu.com" class="map-btn">一键导航</a>
-                </div>
+            <div class="mask-gradient"></div>
+            <div class="info-box">
+                <h3 class="ani" data-ani="animate__fadeInDown" style="font-size: 24px; font-weight: 300; margin-bottom: 20px;">诚挚邀请</h3>
+                <p class="ani" data-ani="animate__fadeIn" data-delay="0.3s">2026年05月20日 11:58</p>
+                <p class="ani" data-ani="animate__fadeIn" data-delay="0.5s" style="margin-bottom: 30px;">北京市朝阳区XX国际酒店</p>
+                <a href="https://map.baidu.com" class="btn ani" data-ani="animate__bounceIn" data-delay="0.8s">查看地图导航</a>
             </div>
         </div>
 
     </div>
 </div>
 
-<!-- 【关键修改2】JS也换成阿里巴巴源 -->
 <script src="https://npm.elemecdn.com/swiper@8.4.7/swiper-bundle.min.js"></script>
 <script>
-    // 1. Loading 消失逻辑
+    // Loading
     window.onload = function() {
-        // 简单粗暴：直接移除loading，不等待其他
-        var loading = document.getElementById('loading');
-        setTimeout(function() {
-            loading.style.opacity = '0';
-            setTimeout(function() { loading.remove(); }, 600);
-        }, 500);
+        setTimeout(function(){
+            document.getElementById('loading').style.opacity = '0';
+            setTimeout(function(){ document.getElementById('loading').remove(); }, 600);
+        }, 800);
     }
 
-    // 2. Swiper 初始化 (加了 try-catch 防止报错阻断)
-    try {
-        const swiper = new Swiper('.mySwiper', {
-            direction: 'vertical',
-            loop: false,
-            on: {
-                init: function () { doAni(this); },
-                slideChangeTransitionEnd: function () { doAni(this); }
-            }
-        });
-    } catch (e) {
-        console.error("Swiper启动失败，可能是资源没加载", e);
-        alert("资源加载失败，请关闭广告拦截插件后重试");
-    }
+    // Swiper
+    var swiper = new Swiper(".mySwiper", {
+        direction: "vertical",
+        loop: false,
+        speed: 800, // 滑动速度慢一点，更优雅
+        on: {
+            init: function() { doAni(this); },
+            slideChangeTransitionEnd: function() { doAni(this); }
+        }
+    });
 
-    // 3. 动画逻辑
+    // Animation
     function doAni(swiper) {
-        document.querySelectorAll('.hide').forEach(el => {
-            el.style.visibility = 'hidden';
-            el.classList.remove('animate__animated');
-            // 移除所有 animate__ 开头的类
-            el.classList.forEach(cls => {
-                if(cls.startsWith('animate__')) el.classList.remove(cls);
+        var slides = document.querySelectorAll('.swiper-slide');
+        slides.forEach(s => {
+            s.querySelectorAll('.ani').forEach(el => {
+                el.style.visibility = 'hidden';
+                el.classList.remove('animate__animated');
+                el.className = el.className.replace(/animate__[\w]+/g, '').trim();
             });
         });
 
-        const activeSlide = swiper.slides[swiper.activeIndex];
-        const aniItems = activeSlide.querySelectorAll('.hide');
-
-        aniItems.forEach(el => {
+        var active = swiper.slides[swiper.activeIndex];
+        active.querySelectorAll('.ani').forEach(el => {
             el.style.visibility = 'visible';
-            const aniName = el.getAttribute('data-ani');
-            const delay = el.getAttribute('data-delay') || '0s';
-            el.style.animationDelay = delay;
-            el.classList.add('animate__animated', aniName);
+            var ani = el.getAttribute('data-ani');
+            var d = el.getAttribute('data-delay') || '0s';
+            el.style.animationDelay = d;
+            el.classList.add('animate__animated', ani);
         });
     }
 </script>
